@@ -3,14 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stereoscopic "Hello World" in A-Frame</title>
-    <script src="https://unpkg.com/webvr-polyfill"></script>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <title>Stereoscopic "Hello World" with Three.js</title>
+    <script src="https://threejs.org/build/three.js"></script>
 </head>
 <body>
-    <a-scene>
-        <a-sky color="#ECECEC"></a-sky>
-        <a-text value="testing" position="-1 1.6 -3" rotation="0 45 0" color="#4CC3D9" scale="2 2 2"></a-text>
-    </a-scene>
+    <script>
+        // Set up scene
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Create stereoscopic effect
+        var effect = new THREE.StereoEffect(renderer);
+        effect.setSize(window.innerWidth, window.innerHeight);
+
+        // Create "Hello World" text
+        var textGeometry = new THREE.TextGeometry("Hello World", {
+            font: new THREE.FontLoader().load("https://threejs.org/examples/fonts/helvetiker_regular.typeface.json"),
+            size: 1,
+            height: 0.1,
+            curveSegments: 3,
+            bevelEnabled: true,
+            bevelThickness: 0.1,
+            bevelSize: 0.1,
+            bevelOffset: 0,
+            bevelSegments: 5
+        });
+
+        var textMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        var textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        textMesh.position.set(-1, 1.6, -3);
+        scene.add(textMesh);
+
+        // Set up camera position
+        camera.position.z = 5;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            textMesh.rotation.x += 0.01;
+            textMesh.rotation.y += 0.01;
+            effect.render(scene, camera);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
